@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Беспилотный транспорт — ИИ-аналитика</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0b0b;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.6), #0b0b0b),
+    url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1600') center/cover no-repeat;
+  text-align: center;
+  padding: 2rem;
+}
+.hero h1 {
+  font-size: clamp(32px, 6vw, 60px);
+  font-weight: 700;
+  margin-bottom: 12px;
+  animation: fadeIn 1.5s ease;
+}
+.hero p {
+  opacity: 0.6;
+  font-size: 18px;
+  animation: fadeIn 2s ease;
+}
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  opacity: 0.4;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: bounce 2s infinite;
+}
+
+/* MAIN */
+.main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* SEARCH */
+.search-wrap {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.search-wrap input {
+  flex: 1;
+  min-width: 200px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid #222;
+  background: #111;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border-color .2s;
+}
+.search-wrap input:focus { border-color: #378ADD; }
+.search-wrap input::placeholder { color: #555; }
+
+.ai-btn {
+  padding: 14px 22px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #111;
+  color: #85B7EB;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s, border-color .2s;
+}
+.ai-btn:hover { background: #1a1a2e; border-color: #378ADD; }
+.ai-btn.loading { opacity: .6; cursor: default; }
+
+/* AI ANSWER */
+.ai-answer {
+  background: rgba(55,138,221,0.07);
+  border: 1px solid rgba(55,138,221,0.2);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #aaa;
+  display: none;
+}
+.ai-answer strong { color: #85B7EB; }
+
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.stat {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.stat-num { font-size: 28px; font-weight: 700; color: #fff; }
+.stat-label { font-size: 11px; color: #555; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* TABLE */
+.news-list { display: flex; flex-direction: column; gap: 8px; }
+.news-item {
+  background: #111;
+  border: 1px solid #1a1a1a;
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp .5s forwards;
+  transition: border-color .2s, background .2s;
+}
+.news-item:hover { background: #141414; border-color: #2a2a2a; }
+.news-num { font-size: 11px; color: #444; min-width: 24px; padding-top: 2px; }
+.news-body { flex: 1; }
+.news-title { font-size: 14px; font-weight: 500; color: #e0e0e0; margin-bottom: 5px; line-height: 1.4; }
+.news-meta { font-size: 12px; color: #555; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.news-tag {
+  background: rgba(55,138,221,0.12);
+  color: #5a9fd4;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(55,138,221,0.2);
+}
+
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: #444;
+  font-size: 14px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 1.5px solid #85B7EB;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div>
+    <h1>Беспилотный транспорт</h1>
+    <p>ИИ-аналитика новостей в реальном времени</p>
+  </div>
+  <div class="scroll-hint">↓ scroll</div>
+</div>
+
+<div class="main">
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num" id="totalCount">—</div>
+      <div class="stat-label">Всего</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="filteredCount">—</div>
+      <div class="stat-label">Найдено</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statusLabel" style="font-size:16px;padding-top:6px">Загрузка...</div>
+      <div class="stat-label">Статус</div>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="🔍  Поиск по новостям..." />
+    <button class="ai-btn" id="aiBtn" onclick="runAiSearch()">✦ ИИ-анализ</button>
+  </div>
+
+  <div class="ai-answer" id="aiAnswer"></div>
+
+  <div class="news-list" id="newsList"></div>
+</div>
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRw9piSZPAeMjTOPQXAcMCfCilJYlDVI7uu-O0OtimOw0uGASSAEtZ3loOqL9QPOOcjo8oMFH7s_-Qc/gviz/tq?tqx=out:json";
+
+let allData = [];
+let isAiLoading = false;
+
+function setStatus(s) { document.getElementById('statusLabel').textContent = s; }
+
+fetch(SHEET_URL)
+  .then(r => r.text())
+  .then(raw => {
+    try {
+      const json = JSON.parse(raw.substr(47).slice(0, -2));
+      allData = json.table.rows.map(r => r.c.map(c => c ? String(c.v) : ''));
+      document.getElementById('totalCount').textContent = allData.length;
+      document.getElementById('filteredCount').textContent = allData.length;
+      setStatus('Готово ✓');
+      render(allData);
+    } catch(e) {
+      setStatus('Ошибка');
+      loadDemo();
+    }
+  })
+  .catch(() => { setStatus('Демо'); loadDemo(); });
+
+function loadDemo() {
+  allData = [
+    ['Waymo расширяет зону покрытия в Сан-Франциско', 'Роботакси', '2025-01-15'],
+    ['Tesla FSD 13.0: новые возможности автопилота', 'Легковые авто', '2025-01-12'],
+    ['ЕС ужесточает регулирование автономного транспорта', 'Регулирование', '2025-01-10'],
+    ['Baidu Apollo запускает роботакси в Пекине', 'Роботакси', '2025-01-08'],
+    ['Cruise возобновляет испытания после паузы', 'Роботакси', '2024-12-28'],
+    ['Nuro доставляет грузы без водителя в 5 городах', 'Логистика', '2024-12-20'],
+  ];
+  document.getElementById('totalCount').textContent = allData.length;
+  document.getElementById('filteredCount').textContent = allData.length;
+  render(allData);
+}
+
+function render(data) {
+  const list = document.getElementById('newsList');
+  document.getElementById('filteredCount').textContent = data.length;
+  if (!data.length) {
+    list.innerHTML = '<div class="empty">Ничего не найдено</div>';
+    return;
+  }
+  list.innerHTML = data.map((row, i) => {
+    const title = row[0] || 'Без заголовка';
+    const tag = row[1] || '';
+    const date = row[2] || '';
+    return `<div class="news-item" style="animation-delay:${i * 0.04}s">
+      <div class="news-num">${i + 1}</div>
+      <div class="news-body">
+        <div class="news-title">${title}</div>
+        <div class="news-meta">
+          ${tag ? `<span class="news-tag">${tag}</span>` : ''}
+          ${date ? `<span>${date}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  const filtered = allData.filter(row => row.join(' ').toLowerCase().includes(q));
+  render(filtered);
+  document.getElementById('aiAnswer').style.display = 'none';
+});
+
+async function runAiSearch() {
+  if (isAiLoading) return;
+  const q = document.getElementById('search').value.trim();
+  if (!q) { document.getElementById('search').focus(); return; }
+
+  isAiLoading = true;
+  const btn = document.getElementById('aiBtn');
+  btn.classList.add('loading');
+  btn.innerHTML = '<span class="spinner"></span>Анализирую...';
+
+  const snippet = allData.slice(0, 30).map(r => r.join(' | ')).join('\n');
+  const prompt = `Ты аналитик новостей о беспилотном транспорте. Данные из базы:\n${snippet}\n\nВопрос: "${q}"\n\nДай краткий аналитический ответ (3-5 предложений) на русском языке.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.find(b => b.type === 'text')?.text || 'Не удалось получить ответ.';
+    const box = document.getElementById('aiAnswer');
+    box.innerHTML = '<strong>✦ ИИ-анализ:</strong> ' + text;
+    box.style.display = 'block';
+  } catch(err) {
+    const box = document.getElementById('aiAnswer');
+    box.innerHTML = '<strong>Ошибка:</strong> Не удалось подключиться к ИИ.';
+    box.style.display = 'block';
+  }
+
+  isAiLoading = false;
+  btn.classList.remove('loading');
+  btn.innerHTML = '✦ ИИ-анализ';
+}
+</script>
+</body>
+</html>
